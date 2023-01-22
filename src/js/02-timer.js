@@ -6,7 +6,7 @@ const startBtn = document.querySelector('[data-start]');
 const timerDays = document.querySelector('[data-days]');
 const timerHours = document.querySelector('[data-hours]');
 const timerMinutes = document.querySelector('[data-minutes]');
-const timerSecond = document.querySelector('[data-seconds]');
+const timerSeconds = document.querySelector('[data-seconds]');
 
 let nowDate = new Date();
 let selectedDate = new Date();
@@ -28,3 +28,38 @@ const options = {
 };
 
 flatpickr('#datetime-picker', options);
+
+const addLeadingZero = value => {
+  return value.padStart(2, '0');
+};
+
+function convertMs(ms) {
+  nowDate = new Date();
+
+  const second = 1000;
+  const minute = second * 60;
+  const hour = minute * 60;
+  const day = hour * 24;
+
+  const days = Math.floor(ms / day);
+  const hours = Math.floor((ms % day) / hour);
+  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+
+  timerDays.innerHTML = addLeadingZero(String(days));
+  timerHours.innerHTML = addLeadingZero(String(hours));
+  timerMinutes.innerHTML = addLeadingZero(String(minutes));
+  timerSeconds.innerHTML = addLeadingZero(String(seconds));
+}
+
+startBtn.addEventListener('click', () => {
+  startBtn.disabled = true;
+  const timer = setInterval(() => {
+    let dateDifference = selectedDate.getTime() - nowDate.getTime();
+    if (dateDifference > 0) {
+      convertMs(dateDifference);
+    } else {
+      clearInterval(timer);
+    }
+  }, 1000);
+});
